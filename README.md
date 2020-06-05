@@ -1,4 +1,45 @@
-# nativescript-remote-builds
+# nativescript-remote-builds-ssh-remote
+
+This repository is a fork of [NativeScript/nativescript-remote-builds](https://github.com/NativeScript/nativescript-remote-builds) with support for building your NativeScript iOS builds on a remote MacOS machine from Linux or Windows.
+
+
+
+The implementation is very hacked together at this stage. See the following example ``.nsremote.config.json``  file to give an idea how the SSH extension is configured:
+
+```json
+{
+    "ssh": {
+        // Only supports 1 set of credentials so the idea here is that the "machines" act as fallbacks for the same machine connected over Ethernet, Wi-Fi, WAN
+		"machines": [
+            "ben-mbp",
+            "10.42.0.2",
+            "192.168.1.198"
+        ],
+        // ssh login username
+        "sshUser": "ben",
+        // Machine refuses to sign builds run over SSH without unlocking keychain first. Your keychain password will be your MacOS login password
+        "keychainPassword": "example_password",
+        // Directory to perform remote builds in. This is not erased before performing the build
+        "remoteBuildsDir": "/Users/ben/tmp"
+    }
+}
+```
+
+
+
+### Notes:
+
+* The remote machine will need to be configured to use SSH Key-Based authentication
+* You will need to have connected to the the remote machine at least once using your ssh key auth, and added the machine to your known_hosts
+* `tns` Flags e.g. `--clean` ,`--release` and `--env.prod` are ignored, the command run on the remote machine to perform the actual build is `tns build ios --for-device --env.sourceMap`
+* Tested on windows 10 with WSL installed and `bash` command available in cmd
+* Android builds will always run locally
+* Any builds on platform `darwin` (MacOS) will run locally (Otherwise the build process would try to delegate to the rsync/ssh remote in an infinite loop)
+
+
+
+___
+
 
 [![Build Status](https://travis-ci.com/NativeScript/nativescript-remote-builds.svg?branch=master)](https://travis-ci.com/NativeScript/nativescript-remote-builds)
 
