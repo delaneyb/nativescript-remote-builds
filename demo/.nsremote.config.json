@@ -1,6 +1,12 @@
 {
-    "cocoapodsVersion": "1.8.0",
-    "circleci": {
-        "sshRepositoryURL": "git@github.com:DimitarTachev/nativescript-circle-ci-livesync.git"
+    "ssh": {
+        "machines": [
+            "ben-mbp",
+            "10.42.0.2",
+            "192.168.1.198"
+        ],
+        "sshUser": "ben",
+        "keychainPassword": "example_password",
+        "remoteBuildsDir": "/Users/ben/tmp"
     }
 }

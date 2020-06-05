@@ -1,6 +1,7 @@
 const ConfigService = require("../services/common/config-service").ConfigService;
 const GitBasedBuildService = require("../services/common/git-based-build-service").GitBasedBuildService;
 const CircleCIService = require("../services/remotes/circle-ci-service").CircleCIService
+const SSHMachineService = require("../services/remotes/ssh-machine-service").SSHMachineService
 const path = require("path");
 const _ = require("lodash");
 
@@ -25,6 +26,9 @@ class RemoteBuildsService {
             const gitDirsPath = this.$settingsService.getProfileDir();
             const ciService = new CircleCIService(this.$httpClient, this.$fs, this.$logger, this.$cleanupService, this.platform, env.local, config.circleci)
             buildService = new GitBasedBuildService(this.$childProcess, this.$fs, this.$logger, this.$cleanupService, ciService, gitDirsPath, this.platform);
+        } else if (config.ssh) {
+            buildService = new SSHMachineService(this.$fs, this.$logger, this.$cleanupService, this.platform, env.local, config.ssh, projectData)
+            console.log(`sshService construction complete`);
         } else {
             // TODO: refer a README section
             throw new Error("Unsupported build service.");
