@@ -9,17 +9,13 @@ The implementation is very hacked together at this stage. See the following exam
 ```json
 {
     "ssh": {
-        // Only supports 1 set of credentials so the idea here is that the "machines" act as fallbacks for the same machine connected over Ethernet, Wi-Fi, WAN
 		"machines": [
             "ben-mbp",
             "10.42.0.2",
             "192.168.1.198"
         ],
-        // ssh login username
         "sshUser": "ben",
-        // Machine refuses to sign builds run over SSH without unlocking keychain first. Your keychain password will be your MacOS login password
         "keychainPassword": "example_password",
-        // Directory to perform remote builds in. This is not erased before performing the build
         "remoteBuildsDir": "/Users/ben/tmp"
     }
 }
@@ -29,6 +25,10 @@ The implementation is very hacked together at this stage. See the following exam
 
 ### Notes:
 
+* `machines`: Only supports 1 set of credentials so the idea here is that the "machines" act as fallbacks for the same machine connected over Ethernet, Wi-Fi, WAN
+* `sshUser`: User to log in as and run commands under on the remote
+* `keychainPassword`: Machine refuses to sign builds run over SSH without unlocking keychain first. Your keychain password will be your MacOS login password
+* `remoteBuildsDir`: Directory on remote machine to perform builds in. Contents are not erased.
 * The remote machine will need to be configured to use SSH Key-Based authentication
 * You will need to have connected to the the remote machine at least once using your ssh key auth, and added the machine to your known_hosts
 * `tns` Flags e.g. `--clean` ,`--release` and `--env.prod` are ignored, the command run on the remote machine to perform the actual build is `tns build ios --for-device --env.sourceMap`
