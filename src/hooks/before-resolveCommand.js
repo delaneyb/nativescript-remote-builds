@@ -1,6 +1,6 @@
 
 module.exports = (hookArgs, $platformValidationService, $iOSProjectService, $androidToolsInfo) => {
-    if (hookArgs.argv.indexOf("--env.local") > -1) {
+    if (hookArgs.argv.indexOf("--env.local") > -1 || hookArgs.commandArguments.includes("android") || process.platform === 'darwin') {
         // let the local publish
         return;
     }

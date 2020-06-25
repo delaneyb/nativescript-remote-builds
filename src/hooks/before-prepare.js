@@ -1,5 +1,5 @@
 module.exports = (hookArgs) => {
-    if (hookArgs.prepareData.env.local) {
+    if (hookArgs.prepareData.env.local || /android/i.test(hookArgs.prepareData.platform) || process.platform === 'darwin') {
         // local build
         return;
     }
