@@ -177,7 +177,7 @@ class SSHMachineService {
                 return m
             }
         }
-
+        throw new Error(`No machines responded to ping (machines = ${JSON.stringify(this.options.machines)})`)
     }
 
     /**
