@@ -9,7 +9,7 @@ The implementation is very hacked together at this stage. See the following exam
 ```json
 {
     "ssh": {
-		"machines": [
+        "machines": [
             "ben-mbp",
             "10.42.0.2",
             "192.168.1.198"
