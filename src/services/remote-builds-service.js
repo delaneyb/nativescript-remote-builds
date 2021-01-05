@@ -44,14 +44,19 @@ class RemoteBuildsService {
         const buildLevelRemoteEnvVars = env.remote || {};
 
         await this.validateRemoteEnvVars(buildService, cliArgs, buildLevelRemoteEnvVars);
-        await buildService.build({
-            envDependencies,
-            buildLevelLocalEnvVars,
-            buildLevelRemoteEnvVars,
-            projectData,
-            cliArgs,
-            appOutputPath
-        });
+        try {
+            await buildService.build({
+                envDependencies,
+                buildLevelLocalEnvVars,
+                buildLevelRemoteEnvVars,
+                projectData,
+                cliArgs,
+                appOutputPath
+            });
+        } catch (error) {
+            console.error(`buildService.build error:`, error, { config });
+            throw error
+        }
     }
 
     async validateRemoteEnvVars(buildService, cliArgs, buildLevelRemoteEnvVars) {
