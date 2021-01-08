@@ -158,7 +158,7 @@ class SSHMachineService {
             // rimraf will sometimes give a "system cannot find the path specified" or similar error
             // even though it successfully removes the directory
             await this.runCommand(eraseCmd).catch(err => {
-                console.warn(`Error while running ${eraseCmd}:`, err.message || err);
+                console.warn(`Error while running ${eraseCmd}: ${err.message || err}`);
             })
         }
 
