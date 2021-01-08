@@ -154,6 +154,10 @@ class SSHMachineService {
 
         console.log(`SSH session started using ${this.options.sshUser}@${this.machine}`);
         
+        const remotePlatformsiOSDir = path.posix.join(this.projectDirRemote, 'platforms', 'ios')
+        const findIPAsCommand = `find ${remotePlatformsiOSDir} -name "*.ipa"`
+        let ipas = [];
+
         if (buildOptions.cliArgs.clean) {
             const eraseCmd = `npx rimraf ${this.projectDirRemote}`
             // rimraf will sometimes give a "system cannot find the path specified" or similar error
@@ -161,16 +165,13 @@ class SSHMachineService {
             await this.runCommand(eraseCmd).catch(err => {
                 console.warn(`Error while running ${eraseCmd}: ${err.message || err}`);
             })
-        }
-
-        const remotePlatformsiOSDir = path.posix.join(this.projectDirRemote, 'platforms', 'ios')
-        const findIPAsCommand = `find ${remotePlatformsiOSDir} -name "*.ipa"`
-        let ipas = [];
-        // If a valid ipa is already sitting on the remote
-        try {
-            ipas = (await this.runCommand(findIPAsCommand)).stdout.split('\n')
-        } catch (error) {
-            console.log(`Error running ${findIPAsCommand}... Assuming error relates to remote path not existing`, error);
+        } else {
+            // If a valid ipa is already sitting on the remote
+            try {
+                ipas = (await this.runCommand(findIPAsCommand)).stdout.split('\n')
+            } catch (error) {
+                console.log(`${findIPAsCommand} ${error.message || error}: Assuming error relating to remote path not existing`);
+            }
         }
 
         if (!ipas.length) {
