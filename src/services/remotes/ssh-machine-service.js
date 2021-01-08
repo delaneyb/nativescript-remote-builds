@@ -3,7 +3,8 @@ const { spawn, exec, spawnSync } = require('child_process')
 const path = require('path')
 
 // Setup ssh connection
-const { NodeSSH } = require('node-ssh')
+const { NodeSSH } = require('node-ssh');
+const { existsSync } = require("fs");
 
 const EXEC_OPTS = {
     windowsHide: true,
@@ -194,6 +195,10 @@ class SSHMachineService {
             })
             
             const keychainCommand = `security -v unlock-keychain -p "${this.options.keychainPassword}" login.keychain`
+            if (existsSync(path.resolve(this.projectData.projectDir, 'yarn.lock'))) {
+                await this.runCommand('yarn install')
+            }
+
             await this.runCommand(keychainCommand)
             await this.runCommand('tns build ios --for-device --env.sourceMap')
             
