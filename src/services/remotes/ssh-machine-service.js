@@ -220,11 +220,11 @@ class SSHMachineService {
             console.log(`Successfully retrieved ${path.basename(ipaFile)} -> ${ipaRelPath}`);
         }
 
-        // Copy .nsprepareinfo back from remote for the cli
+        // Copy .nsbuildinfo back from remote for the cli
         try {
-            const remoteFile = path.posix.resolve(remotePlatformsiOSDir, '.nsprepareinfo')
-            const localFile = path.resolve(this.projectData.projectDir, 'platforms', 'ios', '.nsprepareinfo')
-            console.log(`Get .nsprepareinfo ${remoteFile} -> ${localFile}`);
+            const remoteFile = path.posix.resolve(remotePlatformsiOSDir, 'build', 'Debug-iphoneos', '.nsbuildinfo')
+            const localFile = path.resolve(this.projectData.projectDir, 'platforms', 'ios', 'build', 'Debug-iphoneos', '.nsbuildinfo')
+            console.log(`Get .nsbuildinfo ${remoteFile} -> ${localFile}`);
             await this.ssh.getFile(localFile, remoteFile)
         } catch (error) {
             console.warn(`Ignoring error retrieving .nsparepareinfo: ${error}`);
