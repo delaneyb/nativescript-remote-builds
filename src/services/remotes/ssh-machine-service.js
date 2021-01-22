@@ -16,9 +16,13 @@ const EXEC_OPTS = {
  */
 class SSHMachineService {
     /**
-     * @param {import('/Users/Ben/Dropbox/Yellowbox/nativescript-cli/lib/common/declarations').IFileSystem} $fs
+     * @param {IFileSystem} $fs
+     * @param {ILogger} $logger
+     * @param {import("nativescript/lib/definitions/project").IProjectCleanupService} $cleanupService
+     * @param {"android" | "ios"} platform
+     * @param {object} localEnv
      * @param {{ machines: string[], sshUser: string, shell?: string, keychainPassword: string, remoteBuildsDir: string }} options ssh remote options
-     * @param {{ projectName: string, projectDir: string, platformsDir: string, nativeProjectRoot: string }} projectData
+     * @param {import("nativescript/lib/definitions/project").IProjectData & { nativeProjectRoot: string }} projectData
      */
     constructor($fs, $logger, $cleanupService, platform, localEnv, options, projectData) {
         console.log(`Constructing new SSHMachineService`);
@@ -262,11 +266,11 @@ class SSHMachineService {
         // containsNewerFiles returns true for C:\Users\Ben\Dropbox\Yellowbox\Yellowbox\node_modules\nativescript-app-sync\platforms\ios as the dir itself has been modified.
         
         // Add -t to preserve modification times, although this means you need to make sure
-        // .nsprepareinfo from the remote is newer than all the other files above (for example,
-        // deleting node_modules and reinstalling on this master machine will mean you also need
-        // to run the whole build again on the remote to change the modification time of
-        // .nsprepareinfo)
-        // Add -z (compress) flag if using over WAN or lower bandwidth LAN connection
+        // .nsprepareinfo (.nsbuildinfo after NS 7?) from the remote is newer than all the other
+        // files above (for example, deleting node_modules and reinstalling on this master machine
+        // will mean you also need to run the whole build again on the remote to change the
+        // modification time of .nsprepareinfo) Add -z (compress) flag if using over WAN or lower
+        // bandwidth LAN connection
 
         // rsync ONLY the required .ipa for running the app AND create the directory structure https://stackoverflow.com/a/22908437
         // -t is INTENTIONALLY omitted, so that after syncing back the .ipa, changes don't cause a complete rebuild every time (the watchers monitor the change times of the folders themselves above^)
