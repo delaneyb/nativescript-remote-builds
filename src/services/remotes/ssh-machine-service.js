@@ -122,7 +122,7 @@ class SSHMachineService {
     }
 
     /**
-     * @param {{ envDependencies: any, buildLevelLocalEnvVars: any, buildLevelRemoteEnvVars: any, projectData: any, cliArgs: { clean: boolean }, appOutputPath: any }} buildOptions
+     * @param {{ cliArgs: { clean: boolean } }} buildOptions
      */
     async build(buildOptions) {
         console.log(`Checking if local ipa exists at "${this.projectData.nativeProjectRoot}/build/Debug-iphoneos/${this.projectData.projectName}.ipa" and no clean build flag`);

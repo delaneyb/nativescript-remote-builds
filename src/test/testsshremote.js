@@ -2,7 +2,8 @@ const { SSHMachineService } = require("../services/remotes/ssh-machine-service.j
 const constants = require('../constants.js')
 
 const path = require('path')
-const { FileSystem } = require('nativescript/lib/common/file-system.js')
+const { FileSystem } = require('../../../../../nativescript-cli/lib/common/file-system')
+const { Logger } = require('../../../../../nativescript-cli/lib/common/logger/logger')
 
 if (typeof process.argv[2] !== 'string') {
     console.warn(`Usage: node ${path.basename(__filename)} projectPath\n\tprojectPath:\tPath to a nativescript project to run test with`)
@@ -21,10 +22,10 @@ async function runTest() {
         process.exit(1)
     }
     
-    const service = new SSHMachineService(new FileSystem(), {}, {}, "ios", {}, require(`${projectDir}/.nsremote.config.json`).ssh, {
+    const service = new SSHMachineService(new FileSystem(), new Logger({ DEBUG: true, DISABLE_HOOKS: false }), {}, "ios", {}, require(`${projectDir}/.nsremote.config.json`).ssh, {
         projectDir,
-        nativeProjectRoot: path.relative(projectDir, 'platforms', 'ios'),
-        platformsDir: path.relative(projectDir, 'platforms'),
+        nativeProjectRoot: path.resolve(projectDir, 'platforms', 'ios'),
+        platformsDir: path.resolve(projectDir, 'platforms'),
         projectName: 'Yellowbox'
     })
     
