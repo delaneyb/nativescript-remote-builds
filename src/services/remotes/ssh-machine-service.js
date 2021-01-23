@@ -16,13 +16,14 @@ const EXEC_OPTS = {
  */
 class SSHMachineService {
     /**
-     * @param {IFileSystem} $fs
+     * Update references.d.ts to point to your own cloned copy of [nativescript-cli](https://github.com/NativeScript/nativescript-cli) to get correct parameter typings
+     * @param {import('../../../../../../nativescript-cli/lib/common/declarations').IFileSystem} $fs
      * @param {ILogger} $logger
-     * @param {import("nativescript/lib/definitions/project").IProjectCleanupService} $cleanupService
+     * @param {import("../../../../../../nativescript-cli/lib/definitions/project").IProjectCleanupService} $cleanupService
      * @param {"android" | "ios"} platform
      * @param {object} localEnv
      * @param {{ machines: string[], sshUser: string, shell?: string, keychainPassword: string, remoteBuildsDir: string }} options ssh remote options
-     * @param {import("nativescript/lib/definitions/project").IProjectData & { nativeProjectRoot: string }} projectData
+     * @param {import("../../../../../../nativescript-cli/lib/definitions/project").IProjectData & { nativeProjectRoot: string }} projectData
      */
     constructor($fs, $logger, $cleanupService, platform, localEnv, options, projectData) {
         console.log(`Constructing new SSHMachineService`);
@@ -154,7 +155,7 @@ class SSHMachineService {
         }
 
         if (!this.ssh.isConnected())
-            throw new Error(`SSHMachineService unable to connect to any of the speicified machines`, this.options.machines)
+            throw new Error(`SSHMachineService unable to connect to any of the specified machines ${this.options.machines}`)
 
         console.log(`SSH session started using ${this.options.sshUser}@${this.machine}`);
         
