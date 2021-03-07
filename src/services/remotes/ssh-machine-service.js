@@ -242,7 +242,7 @@ class SSHMachineService {
     }
 
     async rsyncToRemote() {
-        const remoteDir = `${this.options.sshUser}@${this.machine}:/Users/${this.options.sshUser}/tmp/${this.projectData.projectName}`
+        const remoteDir = `${this.options.sshUser}@${this.machine}:${this.projectDirRemote}/${this.projectData.projectName}`
         console.log(`Sending app files to remote dir ${remoteDir}`)
         // NOTE: For rsync / refers to ./ i.e. the transfer source directory
         const cp = exec(`rsync -avzp --delete --exclude={node_modules,/platforms,*/demo/*,*/demo-vue/*,*/demo-ng/*,*/ng-demo/*,*/demo-push/*,/hooks,.git,.DS_Store} ./ ${remoteDir}`, EXEC_OPTS)
@@ -252,7 +252,7 @@ class SSHMachineService {
     }
 
     async rsyncFromRemote() {
-        const remoteDir = `${this.options.sshUser}@${this.machine}:/Users/${this.options.sshUser}/tmp/${this.projectData.projectName}`
+        const remoteDir = `${this.options.sshUser}@${this.machine}:${this.projectDirRemote}/${this.projectData.projectName}`
         console.log(`Retrieving built files ${remoteDir}/platforms/ios --> ./platforms`)
         // The following locations have file modification times compared against .nsprepareinfo. If any files in these locations
         // have changes, this will trigger a build
