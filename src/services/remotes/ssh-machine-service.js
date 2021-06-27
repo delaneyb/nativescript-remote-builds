@@ -22,7 +22,7 @@ class SSHMachineService {
      * @param {import("../../../../../../nativescript-cli/lib/definitions/project").IProjectCleanupService} $cleanupService
      * @param {"android" | "ios"} platform
      * @param {object} localEnv
-     * @param {{ machines: string[], sshUser: string, shell?: string, keychainPassword: string, remoteBuildsDir: string }} options ssh remote options
+     * @param {{ machines: string[], sshUser: string, shell?: string, sshKey?: string, remoteBuildsDir: string }} options ssh remote options
      * @param {import("../../../../../../nativescript-cli/lib/definitions/project").IProjectData & { nativeProjectRoot: string }} projectData
      */
     constructor($fs, $logger, $cleanupService, platform, localEnv, options, projectData) {
@@ -105,16 +105,11 @@ class SSHMachineService {
      * @param {string} command
      */
     async runCommand(command) {
-        console.log(command);
-        // return ssh.execCommand(`. /etc/profile; . ~/.profile; . ~/.bashrc; cd ${projectDirRemote}; ${command}`)
-        const result = await this.ssh.execCommand(`. /etc/profile; $SHELL -ci '${command}'`, {
+        const result = await this.ssh.exec(`$SHELL`, ['-ci', command], {
             cwd: this.projectDirRemote,
             onStderr: chunk => console.error(chunk.toString().trim()),  // Ensures no duplicate newline written
-            // onStderr: chunk => process.stderr.write(chunk, 'buffer'),  // Ensures no duplicate newline written
-            // buf => console.warn(`${this.options.sshUser}@${this.machine} [STDERR]: ${buf}`),
-            onStdout: chunk => console.log(chunk.toString().trim())
-            // onStdout: chunk => process.stdout.write(chunk, 'buffer')
-            // buf => console.log(`${this.options.sshUser}@${this.machine} [STDOUT]: ${buf}`)
+            onStdout: chunk => console.log(chunk.toString().trim()),
+            stream: 'both'
         })
         if (result.code !== null)
             throw new Error(`Command ${command} exited with code ${result.code}`)
@@ -140,10 +135,10 @@ class SSHMachineService {
             console.log(`Trying ssh connection to ${machine}...`);
             try {
                 await this.ssh.connect({
+                    tryKeyboard: true,
                     host: machine,
                     username: this.options.sshUser,
-                    password: this.options.keychainPassword,
-                    // TODO: specify identity file in .nsremote file
+                    privateKey: this.options.sshKey,
                     readyTimeout: 1000,
                 })
                 this.machine = machine
@@ -153,10 +148,10 @@ class SSHMachineService {
                 console.warn(error.message || error);
             }
         }
-
+        
         if (!this.ssh.isConnected())
             throw new Error(`SSHMachineService unable to connect to any of the specified machines ${this.options.machines}`)
-
+        
         console.log(`SSH session started using ${this.options.sshUser}@${this.machine}`);
         
         const remotePlatformsiOSDir = path.posix.join(this.projectDirRemote, 'platforms', 'ios')
@@ -200,13 +195,18 @@ class SSHMachineService {
                 }
             })
             
-            const keychainCommand = `security -v unlock-keychain -p "${this.options.keychainPassword}" login.keychain`
             if (existsSync(path.resolve(this.projectData.projectDir, 'yarn.lock'))) {
                 await this.runCommand('yarn install')
             }
 
-            await this.runCommand(keychainCommand)
-            await this.runCommand('tns build ios --for-device --env.sourceMap')
+            const keychainPassword = process.env.KEYCHAIN_PASS
+            if (!keychainPassword) {
+                console.error(`Missing process.env.KEYCHAIN_PASS required for nativescript-remote-builds ssh-machine-service`)
+                throw new Error(`Missing process.env.KEYCHAIN_PASS required for nativescript-remote-builds ssh-machine-service`)
+            }
+                
+            await this.runCommand(`security -v unlock-keychain -p "${keychainPassword}" login.keychain`)
+            await this.runCommand('ns build ios --for-device --env.sourceMap')
             
             ipas = (await this.runCommand(findIPAsCommand)).stdout.split('\n')
         }
